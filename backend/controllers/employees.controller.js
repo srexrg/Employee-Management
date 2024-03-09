@@ -60,6 +60,23 @@ export const getEmployee = async (req, res) => {
   }
 };
 
+export const getEmployeeById = async (req,res) =>{
+  try {
+    
+    const {id} = req.params;
+
+    const employee = await t_Employee.findById(id)
+
+    if(!employee){
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+    res.status(200).json(employee);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to get employee details' });
+    
+  }
+}
+
 export const deleteEmployee = async (req, res) => {
   try {
     const { id } = req.params;

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "./Navbar";
+import { Link } from "react-router-dom";
+import Delete from "./Delete";
 
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);
@@ -18,24 +20,21 @@ function EmployeeList() {
     setEmployees(data);
   };
 
-  const handleEdit = (id) => {
-    // Handle edit action
-    console.log("Edit employee with id:", id);
-  };
-
-  const handleDelete = (id) => {
-    // Handle delete action
-    console.log("Delete employee with id:", id);
-  };
-
   return (
     <div>
       <Navbar />
       <h1 className="text-3xl font-bold mb-4 text-center">Employee List</h1>
-      <table className="w-full">
+      <Link
+        to="/create"
+        className="bg-red-500 hover:bg-red-700 text-white mx-10 font-bold py-2 px-4 rounded"
+      >
+        Add Employee
+      </Link>
+      <table className="w-full mt-5">
         <thead>
           <tr>
             <th className="border px-4 py-2">#</th>
+            <th className="border px-4 py-2">Image</th>
             <th className="border px-4 py-2">Name</th>
             <th className="border px-4 py-2">Gender</th>
             <th className="border px-4 py-2">Course</th>
@@ -48,8 +47,15 @@ function EmployeeList() {
         </thead>
         <tbody>
           {employees.map((employee) => (
-            <tr key={employee.id}>
+            <tr key={employee._id}>
               <td className="border px-4 py-2">{employee._id}</td>
+              <td className="border px-4 py-2">
+                <img
+                  src={`http://localhost:3000/assets/${employee.f_Image}`}
+                  alt="Employee Image"
+                  style={{ maxWidth: "100px", maxHeight: "100px" }}
+                />
+              </td>
               <td className="border px-4 py-2">{employee.f_Name}</td>
               <td className="border px-4 py-2">{employee.f_gender}</td>
               <td className="border px-4 py-2">{employee.f_Course}</td>
@@ -60,18 +66,13 @@ function EmployeeList() {
                 {employee.f_Createdate.split("T")[0]}
               </td>
               <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEdit(employee.id)}
+                <Link
+                  to={`/edit/${employee._id}`}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
                 >
                   Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(employee.id)}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                >
-                  Delete
-                </button>
+                </Link>
+                <Delete employeeId={employee._id} fetchData={fetchData} />
               </td>
             </tr>
           ))}

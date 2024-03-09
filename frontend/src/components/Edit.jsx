@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useParams, useNavigate } from "react-router-dom";
 
 import GenderCheckbox from "./GenderCheckbox";
-import { useNavigate } from "react-router";
 
-const Create = () => {
+const EditEmployee = () => {
+  const { employeeId } = useParams();
+  const navigate = useNavigate();
+
   const [inputs, setInputs] = useState({
     f_Name: "",
     f_Email: "",
@@ -15,7 +18,25 @@ const Create = () => {
     f_Image: null,
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    fetchEmployee();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchEmployee = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/employee/${employeeId}`
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch employee");
+      }
+      const data = await res.json();
+      setInputs(data);
+    } catch (error) {
+      toast.error(error.message || "Failed to fetch employee");
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,23 +48,12 @@ const Create = () => {
   };
 
   const handleCourseChange = (e) => {
-    const { name, checked, value } = e.target;
-    if (checked) {
-      setInputs((prevInputs) => ({
-        ...prevInputs,
-        [name]: [...prevInputs[name], value],
-      }));
-    } else {
-      setInputs((prevInputs) => ({
-        ...prevInputs,
-        [name]: prevInputs[name].filter((course) => course !== value),
-      }));
-    }
+    const { name, value } = e.target;
+    setInputs({ ...inputs, [name]: value });
   };
 
   const handleImage = (e) => {
     setInputs({ ...inputs, f_Image: e.target.files[0] });
-    console.log(inputs.f_Image);
   };
 
   const handleSubmit = async (e) => {
@@ -59,28 +69,29 @@ const Create = () => {
     formData.append("f_Image", inputs.f_Image); // Append file data
 
     try {
-      const res = await fetch("http://localhost:3000/api/employee/create", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        `http://localhost:3000/api/employee/edit/${employeeId}`,
+        {
+          method: "PATCH",
+          body: formData,
+        }
+      );
 
       const data = await res.json();
-      console.log(data);
-
       if (res.ok) {
-        toast.success("Employee created successfully");
+        toast.success(data.message || "Employee updated successfully");
         navigate("/employees");
       } else {
-        throw new Error(data.message || "Failed to create employee");
+        throw new Error(data.message || "Failed to update employee");
       }
     } catch (error) {
-      toast.error(error.message || "Failed to create employee");
+      toast.error(error.message || "Failed to update employee");
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-gray-100 rounded-lg shadow-md">
-      <h2 className="text-2xl mb-4">Create Employee</h2>
+      <h2 className="text-2xl mb-4">Edit Employee</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-4">
           <label className="block mb-1">Name:</label>
@@ -189,11 +200,11 @@ const Create = () => {
           type="submit"
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
         >
-          Create
+          Update
         </button>
       </form>
     </div>
   );
 };
 
-export default Create;
+export default EditEmployee;

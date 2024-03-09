@@ -16,8 +16,12 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors())
+
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, 'public')));
 
 const port = process.env.PORT || 5000;
 
@@ -53,7 +57,7 @@ const upload = multer({
 });
 
 app.post("/api/employee/create", upload.single("f_Image"), createEmployee);
-app.put("/api/employee/:id", upload.single("f_Image"), editEmployee);
+app.patch("/api/employee/edit/:id", upload.single("f_Image"), editEmployee);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/employee", employeeRoutes);
