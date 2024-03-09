@@ -2,9 +2,8 @@ import mongoose from "mongoose";
 
 const EmployeeSchema = new mongoose.Schema({
   f_Image: {
-    data: Buffer,
     type:String,
-    required: false, // Assuming image is optional
+    required: false,
   },
 
   f_Name: {
@@ -42,7 +41,7 @@ const EmployeeSchema = new mongoose.Schema({
 
   f_gender: {
     type: String,
-    enum: ['male', 'female', 'other'],
+    // enum: ['male', 'female', 'other'],
     required: true,
   },
 

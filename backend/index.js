@@ -5,16 +5,19 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import employeeRoutes from "./routes/employee.routes.js";
 import multer from "multer";
+import cors from "cors"
 import {
   createEmployee,
   editEmployee,
 } from "./controllers/employees.controller.js";
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors())
 
 const port = process.env.PORT || 5000;
 
@@ -30,22 +33,27 @@ const storage = multer.diskStorage({
     cb(null, "public/assets");
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + file.originalname);
-  },
-});
-const upload = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error("Only JPG/PNG files are allowed!"), false);
-    }
-    cb(null, true);
+    cb(null, file.fieldname + '_' + Date.now()+ path.extname(file.originalname));
   },
 });
 
-app.post("/api/employee/create", upload.single("picture"), createEmployee);
-app.put("/api/employee/:id", upload.single("picture"), editEmployee);
+const fileFilter = (req,file,cb) =>{
+  const allowed = ['image/png','image/jpg','image/jpeg']
+  if(allowed.includes(file.mimetype)){
+    cb(null,true)
+  }else{
+    cb(null,false)
+  }
+}
+
+
+const upload = multer({
+  storage: storage,
+  fileFilter
+});
+
+app.post("/api/employee/create", upload.single("f_Image"), createEmployee);
+app.put("/api/employee/:id", upload.single("f_Image"), editEmployee);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/employee", employeeRoutes);

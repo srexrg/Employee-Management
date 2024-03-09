@@ -8,7 +8,7 @@ const employeeSchema = z.object({
   f_Designation: z.string(),
   f_gender: z.string(),
   f_Course: z.string(),
-  f_Image: z.any(),
+  // f_Image: z.string(),
 });
 
 export const createEmployee = async (req, res) => {

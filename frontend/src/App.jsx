@@ -1,33 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
+import { Toaster } from "react-hot-toast";
+import Login from './components/Login'
+import { useAuthContext } from './context/AuthContext';
+import Home from './components/Home';
+import EmployeeList from './components/Employees';
+import Create from './components/Create';
+// import { Navbar } from './components/Navbar';
+
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { authUser } = useAuthContext();
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    
+    
+    <Routes>
+      <Route 
+      path='/login'
+      element={authUser ? <Navigate to={"/"} /> : <Login/>}
+      />
+      <Route 
+      path='/'
+      element={authUser ? <Home /> : <Navigate to={"/login"} />}
+      />
+      <Route 
+      path='/employees'
+      element={authUser ? <EmployeeList /> : <Navigate to={"/login"} />}
+      />
+      <Route 
+      path='/create'
+      element={authUser ? <Create /> : <Navigate to={"/login"} />}
+      />
+      <Route/>
+    </Routes>
+    <Toaster />
     </>
   )
 }
