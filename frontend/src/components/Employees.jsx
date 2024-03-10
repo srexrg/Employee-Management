@@ -5,9 +5,11 @@ import Delete from "./Delete";
 
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCriteria, setFilterCriteria] = useState("all");
+  const [sortCriteria, setSortCriteria] = useState("name");
 
   useEffect(() => {
-    // Fetch data from backend when the component mounts
     fetchData();
   }, []);
 
@@ -20,10 +22,72 @@ function EmployeeList() {
     setEmployees(data);
   };
 
+  const filteredEmployees = employees.filter((employee) => {
+    const nameMatch = employee.f_Name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const filterMatch =
+      filterCriteria === "all" ||
+      employee.f_gender === filterCriteria ||
+      employee.f_Course === filterCriteria ||
+      employee.f_Designation === filterCriteria;
+    return nameMatch && filterMatch;
+  });
+
+  const sortedEmployees = filteredEmployees.sort((a, b) => {
+    if (sortCriteria === "name") {
+      return a.f_Name.localeCompare(b.f_Name);
+    } else if (sortCriteria === "createDate") {
+      return new Date(a.f_Createdate) - new Date(b.f_Createdate);
+    } else if (sortCriteria === "designation") {
+      // Added sorting by designation
+      return a.f_Designation.localeCompare(b.f_Designation);
+    }
+  });
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterCriteria(e.target.value);
+  };
+
+  const handleSortChange = (e) => {
+    setSortCriteria(e.target.value);
+  };
+
   return (
     <div>
       <Navbar />
       <h1 className="text-3xl font-bold mb-4 text-center">Employee List</h1>
+      <div className="flex justify-center mb-4">
+        <input
+          type="text"
+          placeholder="Search by Name"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="border border-gray-300 rounded-md px-4 py-2"
+        />
+        <select
+          value={filterCriteria}
+          onChange={handleFilterChange}
+          className="ml-2 border border-gray-300 rounded-md px-4 py-2"
+        >
+          <option value="all">All</option>
+          <option value="male">male</option>
+          <option value="female">female</option>
+        </select>
+        <select
+          value={sortCriteria}
+          onChange={handleSortChange}
+          className="ml-2 border border-gray-300 rounded-md px-4 py-2"
+        >
+          <option value="name">Name</option>
+          <option value="createDate">Create Date</option>
+          <option value="designation">Designation</option>
+        </select>
+      </div>
       <Link
         to="/create"
         className="bg-red-500 hover:bg-red-700 text-white mx-10 font-bold py-2 px-4 rounded"
@@ -46,7 +110,7 @@ function EmployeeList() {
           </tr>
         </thead>
         <tbody>
-          {employees.map((employee) => (
+          {sortedEmployees.map((employee) => (
             <tr key={employee._id}>
               <td className="border px-4 py-2">{employee._id}</td>
               <td className="border px-4 py-2">

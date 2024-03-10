@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import useLogout from "../hooks/useLogout";
 
@@ -8,7 +9,11 @@ export const Navbar = () => {
   const { authUser } = useAuthContext();
   return (
     <div className="shadow h-14 flex justify-between items-center px-4">
-      <div className="text-lg font-semibold">Employee Management</div>
+      <div className="text-lg font-semibold">
+        <Link to="/">
+        Employee Management
+        </Link>
+        </div>
       <div className="flex items-center">
         <div className="mr-4">Hello, {authUser.username}</div>
         {!loading ? (
