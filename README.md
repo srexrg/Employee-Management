@@ -10,6 +10,12 @@ The Employee Management System is a web application developed for managing emplo
 - **State Management:** Context API is used for state management.
 - **Input Validation:** Zod is used for input validation to ensure data integrity.
 
+
+## Demo
+
+https://github.com/srexrg/Employee-Management/assets/114612234/4e45b90c-1c65-4a08-a6f8-2189f25a4468
+
+
 ## Installation
 1. Clone the repository: `git clone https://github.com/srexrg/Employee-Management`
 2. Install dependencies: `npm install`
